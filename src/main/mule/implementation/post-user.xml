@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="post-user-flow" doc:id="a55985e4-9922-41d4-b8e9-56f84cc03b57" >
+		<logger level="INFO" doc:name="Post User Start" doc:id="83a5d7d5-397a-4704-a01b-6f6ba67560c1" />
+		<ee:transform doc:name="Init Vars" doc:id="f6ea8a70-f73f-49e0-a749-e5df4f59ab89">
+			<ee:message />
+			<ee:variables>
+				<ee:set-variable variableName="insertUserQuery" ><![CDATA[%dw 2.0
+output application/java
+---
+p('secure::database.query.user.insert')]]></ee:set-variable>
+				<ee:set-variable variableName="insertUserParams" ><![CDATA[%dw 2.0
+output application/json
+import dw::GlobalFunctions as common
+---
+payload.users map(usr, idx) ->
+{
+	userName: usr.username,
+	firstName: (usr.fullname splitBy " ")[0],
+	lastName: (usr.fullname splitBy " ")[1],
+	createdDateTime: common::getCurrentDateTime()
+}]]></ee:set-variable>
+				<ee:set-variable variableName="insertAccountParams" ><![CDATA[%dw 2.0
+output application/json
+import dw::GlobalFunctions as common
+---
+payload.users map(usr, idx) ->
+{
+	userName: usr.username,
+	dateRegistered: usr.dateRegistered as Date {format: "dd-MM-yyyy"} as String{format:"yyyy-MM-dd"},
+	createdDateTime: common::getCurrentDateTime()
+}]]></ee:set-variable>
+				<ee:set-variable variableName="insertUserDetailParams" ><![CDATA[%dw 2.0
+output application/json
+import dw::GlobalFunctions as common
+---
+payload.users map(usr, idx) ->
+{
+	userName: usr.username,
+	fullName: usr.fullname,
+	birthday: usr.birthday as Date {format: "dd-MM-yyyy"} as String{format:"yyyy-MM-dd"},
+	gender: if(usr.gender == "female") 'f' else 'm',
+	createdDateTime: common::getCurrentDateTime()
+}]]></ee:set-variable>
+				<ee:set-variable variableName="insertAccountQuery" ><![CDATA[%dw 2.0
+output application/java
+---
+p('secure::database.query.account.insert')]]></ee:set-variable>
+				<ee:set-variable variableName="insertUserDetailQuery" ><![CDATA[%dw 2.0
+output application/java
+---
+p('secure::database.query.userdetail.insert')]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<try doc:name="Transactional" doc:id="a88d488f-4dba-46d3-83d9-b4efcab02be4" transactionalAction="BEGIN_OR_JOIN">
+			<flow-ref doc:name="DB Insert User" doc:id="86bd28fb-c22b-46e8-851d-dc16d40e79a6" name="db-insert-user-subflow" />
+			<flow-ref doc:name="DB Insert Account" doc:id="ae7f08d6-e415-4e19-82a9-922a9e4c919b" name="db-insert-account-subflow" />
+			<flow-ref doc:name="DB Insert User Detail" doc:id="58cb259d-6c7c-43f0-97a4-57924cb0523b" name="db-insert-userdetail-subflow" />
+		</try>
+		<ee:transform doc:name="Construct Response" doc:id="d3bf272a-50d4-4e58-993d-d003e06bc373" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "Success"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Post User End" doc:id="b4be8a13-ba79-4411-b161-48586b7a078f" />
+	</flow>
+</mule>

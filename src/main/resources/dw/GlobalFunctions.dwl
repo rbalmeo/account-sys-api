@@ -1,0 +1,1 @@
+fun getCurrentDateTime() = (now() >> 'Asia/Manila') as String {format: "yyyy-MM-dd HH:mm:ss"}

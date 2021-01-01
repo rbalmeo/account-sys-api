@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	  <error-handler name="apikit-error-handler">
+            <on-error-propagate type="APIKIT:BAD_REQUEST">
+			<ee:transform doc:name="Init Error Object" doc:id="17812e05-2f4d-4399-8f31-2c69b2bfc4a8" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" >
+				<ee:message />
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[400]]></ee:set-variable>
+					<ee:set-variable variableName="errorObject" ><![CDATA[%dw 2.0
+output application/java
+---
+{
+	category: p('mule.error.category.business'),
+	message: p('mule.error.type.400.description'),
+	code: p('mule.error.type.400.code'),
+	severity: p('mule.error.severity.major')
+}]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="Invoke Error Handling Response" doc:id="91b7913b-6e54-43c8-8219-8a3884edd2d8" name="error-handling-response-subflow" />
+            
+</on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+			<ee:transform doc:name="Init Error Object" doc:id="bb801434-8ce2-4453-ad6e-9e70b671632d" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" >
+				<ee:message />
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[404]]></ee:set-variable>
+					<ee:set-variable variableName="errorObject" ><![CDATA[%dw 2.0
+output application/java
+---
+{
+	category: p('mule.error.category.business'),
+	message: p('mule.error.type.404.description'),
+	code: p('mule.error.type.404.code'),
+	severity: p('mule.error.severity.major')
+}]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="Invoke Error Handling Response" doc:id="77960983-a159-4d9a-80b8-03cacafdbd41" name="error-handling-response-subflow"/>
+            
+</on-error-propagate>
+            <on-error-propagate type="APIKIT:METHOD_NOT_ALLOWED">
+			<ee:transform doc:name="Init Error Object" doc:id="a35f3eec-1889-428f-a38b-f4fec42720ca" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" >
+				<ee:message />
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[405]]></ee:set-variable>
+					<ee:set-variable variableName="errorObject" ><![CDATA[%dw 2.0
+output application/java
+---
+{
+	category: p('mule.error.category.business'),
+	message: p('mule.error.type.405.description'),
+	code: p('mule.error.type.405.code'),
+	severity: p('mule.error.severity.major')
+}]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="Invoke Error Handling Response" doc:id="8b8adb13-d2ca-45db-a5d1-57f64942edf6" name="error-handling-response-subflow" />
+            
+</on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_ACCEPTABLE">
+			<ee:transform doc:name="Init Error Object" doc:id="eb3a343b-ff3a-488c-b790-9de92d0d4069" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" >
+				<ee:message />
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[406]]></ee:set-variable>
+					<ee:set-variable variableName="errorObject" ><![CDATA[%dw 2.0
+output application/java
+---
+{
+	category: p('mule.error.category.business'),
+	message: p('mule.error.type.406.description'),
+	code: p('mule.error.type.406.code'),
+	severity: p('mule.error.severity.major')
+}]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="Invoke Error Handling Response" doc:id="2d411135-0ac3-4058-aaa1-e8c41f0c3371" name="error-handling-response-subflow" />
+            
+</on-error-propagate>
+            <on-error-propagate type="APIKIT:UNSUPPORTED_MEDIA_TYPE">
+			<ee:transform doc:name="Init Error Object" doc:id="54605108-eef2-4cde-92e9-b02bc0f658d7" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" >
+				<ee:message />
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[415]]></ee:set-variable>
+					<ee:set-variable variableName="errorObject" ><![CDATA[%dw 2.0
+output application/java
+---
+{
+	category: p('mule.error.category.business'),
+	message: p('mule.error.type.415.description'),
+	code: p('mule.error.type.415.code'),
+	severity: p('mule.error.severity.major')
+}]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="Invoke Error Handling Response" doc:id="03cebc94-cea6-4cd4-b13d-e55e5cd4fdf1" name="error-handling-response-subflow" />
+            
+</on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_IMPLEMENTED">
+			<ee:transform doc:name="Init Error Object" doc:id="24b180f4-e120-4117-9085-743706f254ff" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" >
+				<ee:message />
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[501]]></ee:set-variable>
+					<ee:set-variable variableName="errorObject" ><![CDATA[%dw 2.0
+output application/java
+---
+{
+	category: p('mule.error.category.business'),
+	message: p('mule.error.type.501.description'),
+	code: p('mule.error.type.501.code'),
+	severity: p('mule.error.severity.major')
+}]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="Invoke Error Handling Response" doc:id="866c6125-dd0d-4e65-9ffc-5688026ff7cb" name="error-handling-response-subflow" />
+            
+</on-error-propagate>
+        </error-handler>
+	<error-handler name="main-error-handler" doc:id="1ee693b0-e5c4-4547-9f6c-48edaf223ba3" >
+		<on-error-continue enableNotifications="true" logException="true" doc:name="On Database Transaction Failed Continue" doc:id="41f9f134-a66a-4f47-b0d9-7c368c2f633b" type="CUST:DATABASE_TXN_ERROR" >
+			<ee:transform doc:name="Init Error Vars" doc:id="444d3abf-675d-4934-9400-d3eab9b8a128" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" >
+				<ee:message />
+				<ee:variables >
+					<ee:set-variable variableName="errorObject" ><![CDATA[%dw 2.0
+output application/java
+---
+{
+	category: p('mule.error.category.technical'),
+	message: error.description default p('mule.error.type.124.description'),
+	code: p('mule.error.type.124.code'),
+	severity: p('mule.error.severity.critical'),
+}]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="Invoke Error Handling Response" doc:id="2ba75c52-fdd5-4904-98f0-bca9b27fdf8e" name="error-handling-response-subflow" />
+		</on-error-continue>
+		<on-error-continue enableNotifications="true" logException="true" doc:name="On Database Transaction Failed Continue" doc:id="e1af11b5-3622-49e1-81aa-7e0b6174bf1a" type="CUST:DATABASE_RECORD_NOT_FOUND" >
+			<ee:transform doc:name="Init Error Vars" doc:id="e6d9a82f-e8c6-46b5-9e94-a9a4261fe0a2" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" >
+				<ee:message />
+				<ee:variables >
+					<ee:set-variable variableName="errorObject" ><![CDATA[%dw 2.0
+output application/java
+---
+{
+	category: p('mule.error.category.technical'),
+	message: error.description default p('mule.error.type.125.description'),
+	code: p('mule.error.type.125.code'),
+	severity: p('mule.error.severity.critical'),
+}]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="Copy_of_Invoke Error Handling Response" doc:id="3b86628d-3211-417a-8e95-c3fe58f357d4" name="error-handling-response-subflow" />
+		</on-error-continue>
+	</error-handler>
+	<error-handler name="database-error-handler" doc:id="c6dca785-7b61-46f5-aafb-b8478f0229ac" >
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="c86ead31-193b-4d9b-8077-a179eb9f221e" >
+			<raise-error doc:name="Raise Database Transaction Error" doc:id="4fe3ab35-7762-4937-a34a-abd74787fa5b" type="CUST:DATABASE_TXN_ERROR" description='#["Database Transaction Failed. Error: " ++ error.description]' />
+		</on-error-propagate>
+	</error-handler>
+	<sub-flow name="error-handling-response-subflow" doc:id="420e21d8-c63b-4760-94eb-0aea6f5769c0" >
+		<set-payload value="#[payload]" doc:name="Set Logger Payload" doc:id="a1da95cf-868c-441f-9a77-a3a883a3622e" mimeType="application/java" />
+		<flow-ref doc:name="Log Error" doc:id="7d5197a7-3d3f-46ef-a807-af3f6b31a3e8" name="error-handling-log-subflow" />
+		<ee:transform doc:name="Construct Error Response" doc:id="cbe2122f-2fde-4b88-a5ae-4a76c608752b" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	status : "Failure",
+	errorCode : vars.errorObject.code,
+	errorDescription : vars.errorObject.message
+}]]></ee:set-payload>
+			</ee:message>
+			<ee:variables />
+		</ee:transform>
+	</sub-flow>
+	<sub-flow name="error-handling-log-subflow" doc:id="1f8d29bf-51c2-42fd-9d3e-e0d0847e3bd3" >
+		<logger level="INFO" doc:name="Log Exception" doc:id="4edbbd1b-17d0-486e-aada-0046e55426d3" />
+
+	</sub-flow>
+	
+</mule>

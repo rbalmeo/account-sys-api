@@ -1,0 +1,30 @@
+accountsysapi:
+  name: "account-sys-api"
+  version: "v1"
+  http:
+    path:
+      base: "/v1"
+      resource: "/*"
+      console: "/console/*"
+    port: "8081"
+
+database:
+  config:
+    host: "localhost"
+    port: "3306"
+    user: "admin"
+    password: "root"
+    name: "customer"
+  query:
+    accountuserdetail:
+      search: 
+        all: "SELECT usr.id, acct.username, usrdtl.fullname, usrdtl.birthday, usrdtl.gender, usr.created_datetime FROM user usr JOIN account acct ON usr.id=acct.user_id JOIN user_detail usrdtl ON usr.id=usrdtl.id WHERE acct.active=1"
+        byusername: "SELECT usr.id, acct.username, usrdtl.fullname, usrdtl.birthday, usrdtl.gender, usr.created_datetime FROM user usr JOIN account acct ON usr.id=acct.user_id JOIN user_detail usrdtl ON usr.id=usrdtl.id WHERE acct.username = :username AND acct.active=1"
+    user:    
+      insert: "INSERT INTO user(username, first_name, last_name, created_datetime) VALUES(:userName, :firstName, :lastName, :createdDateTime)"
+    account:
+      insert: "INSERT INTO account(user_id, username, active, date_registered, created_datetime) VALUES((SELECT id FROM user WHERE username = :userName), :userName, true, :dateRegistered, :createdDateTime)"
+    userdetail:
+      insert: "INSERT INTO user_detail(user_id, fullname, birthday, gender, created_datetime) VALUES((SELECT id FROM user WHERE username = :userName), :fullName, :birthday, :gender, :createdDateTime)"
+      
+       

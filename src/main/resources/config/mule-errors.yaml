@@ -1,0 +1,34 @@
+mule:
+  error:
+    category:
+      technical: "TECHNICAL"
+      business: "BUSINESS"
+    severity:
+      major: "MAJOR"
+      critical: "CRITICAL"
+      minor: "MINOR"
+    type:
+      "400": 
+        code: "HTTP-MULE-400"    
+        description: "The request was invalid or cannot be otherwise served."
+      "404": 
+        code: "HTTP-MULE-404"    
+        description: "The URI requested is invalid or the resource requested does not exists."
+      "405": 
+        code: "HTTP-MULE-405"    
+        description: "A request was made of a resource using a request method not supported by that resource."
+      "406": 
+        code: "HTTP-MULE-406"    
+        description: "The server cannot respond with the accept-header specified in the request."
+      "415": 
+        code: "HTTP-MULE-415"    
+        description: "The request entity has a media type which the server or resource does not support."
+      "401": 
+        code: "HTTP-MULE-401"    
+        description: "Unauthorized."
+      "124": 
+        code: "DB-MULE-124"
+        description: "Error in Database Transaction."
+      "125": 
+        code: "DB-MULE-125"
+        description: "User Not Found."

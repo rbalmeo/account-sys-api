@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd 
+http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd 
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd">
+		 <apikit:config name="account-sys-api-config" api="resource::e56fd712-7d87-4366-9ad7-0d22d16b4a68:account-sys-api:1.0.0:raml:zip:account-sys-api.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+		
+		<db:config name="Customer_Database_Config" doc:name="Database Config" doc:id="ba2ff04a-3ea4-440a-8a34-762d0e9def31" >
+		<db:my-sql-connection host="localhost" port="3306" user="admin" password="root" database="customer" />
+	</db:config>
+	 <http:listener-config name="account-sys-api-httpListenerConfig" basePath="/v1">
+        <http:listener-connection host="0.0.0.0" port="8081" />
+    </http:listener-config>
+	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="c5ca1e98-4d05-4517-8300-3d5b83e3004c" file="config/account-sys-api-${mule.env}.yaml" key="${secret.key}" >
+		<secure-properties:encrypt algorithm="Blowfish" />
+	</secure-properties:config>
+	<configuration-properties doc:name="Configuration properties" doc:id="dad75554-d425-49ab-bb6a-4b0253e78565" file="config/mule-errors.yaml" />
+	
+</mule>
