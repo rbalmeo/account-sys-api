@@ -3,4 +3,7 @@
   <types:catalog/>
   <types:enrichment select="#e11f50f6-c71c-4fde-8655-2d2328d8d585"/>
   <types:enrichment select="#f6ea8a70-f73f-49e0-a749-e5df4f59ab89"/>
+  <types:enrichment select="#5d58cae6-67fc-4be8-8c98-e62976f97e95"/>
+  <types:enrichment select="#444d3abf-675d-4934-9400-d3eab9b8a128"/>
+  <types:enrichment select="#51b5f9b5-a1ae-47d5-a7a6-7ce30f6ca91f"/>
 </types:mule>

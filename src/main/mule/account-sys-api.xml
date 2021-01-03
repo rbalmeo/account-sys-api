@@ -12,9 +12,21 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
                 <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
             </http:error-response>
         </http:listener>
-
+		<ee:transform doc:name="Init Vars" doc:id="5d58cae6-67fc-4be8-8c98-e62976f97e95" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="commonHeaders" ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"correlationId":attributes.headers.'x-correlationid',
+	"code": attributes.headers.'x-code'
+}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
 		<apikit:router config-ref="account-sys-api-config"/>
-		
+		<error-handler ref="apikit-error-handler"/>
       
     </flow>
     <flow name="account-sys-api-console">
@@ -28,21 +40,7 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
             </http:error-response>
         </http:listener>
          <apikit:console config-ref="account-sys-api-config" />
-        <error-handler>
-            <on-error-propagate type="APIKIT:NOT_FOUND">
-                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
-                    <ee:message>
-                        <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{message: "Resource not found"}]]></ee:set-payload>
-                    </ee:message>
-                    <ee:variables>
-                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
-                    </ee:variables>
-                </ee:transform>
-            </on-error-propagate>
-        </error-handler>
+       		<error-handler ref="apikit-error-handler"/>
     </flow>
     <flow name="get:\users:account-sys-api-config">
 		<flow-ref doc:name="Invoke Get User" doc:id="8b23429b-09a0-48cf-b03e-26365f792dc1" name="get-user-flow"/>
@@ -51,6 +49,13 @@ output application/json
 		<flow-ref doc:name="Invoke Get User By Username" doc:id="e19d9307-b211-437a-86fc-54c6fe4bb9c9" name="get-user-byusername-flow"/>
     </flow>
     <flow name="post:\users:application\json:account-sys-api-config">
-		<flow-ref doc:name="Invoke Post User" doc:id="494838b2-3d13-44c0-a79e-dc780705c847" name="post-user-flow"/>
+		<choice doc:name="Choice" doc:id="d8872abf-26cb-4713-8c8e-4664aba5f03e" >
+			<when expression='#[isEmpty(payload.users default null)]'>
+				<flow-ref doc:name="Invoke Post User" doc:id="d171b616-8c90-432a-bdb4-c6a187c46bc3" name="post-user-flow"/>
+			</when>
+			<otherwise >
+				<flow-ref doc:name="Invoke Post Multiple Users" doc:id="494838b2-3d13-44c0-a79e-dc780705c847" name="post-multiple-users-flow" />
+			</otherwise>
+		</choice>
     </flow>
 </mule>

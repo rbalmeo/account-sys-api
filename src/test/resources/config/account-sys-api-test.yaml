@@ -11,10 +11,10 @@ accountsysapi:
 
 database:
   config:
-    host: "localhost"
-    port: "3306"
-    user: "![1RxDpX+J0qE=]"
-    password: "![tMHSiVeFPeg=]"
+    host: "4.tcp.ngrok.io"
+    port: "17454"
+    user: "admin"
+    password: "root"
     name: "customer"
   query:
     accountuserdetail:
@@ -35,7 +35,7 @@ database:
         female: "Female"
         male: "Male"
         f: "F"
-        m: "M"
+        m: "M"  
     account:
       active: "1"
        

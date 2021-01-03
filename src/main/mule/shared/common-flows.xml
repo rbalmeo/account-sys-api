@@ -7,7 +7,7 @@ http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/cu
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
 
 	<sub-flow name="db-search-user-subflow" doc:id="ae9c6f24-03d2-439f-94e1-06b9b7b0f819" >
-		<logger level="INFO" doc:name="Log Request" doc:id="33ee8af9-1f88-4bdd-9728-6c620a8adb79" />
+		<logger level="INFO" doc:name="Log Request" doc:id="33ee8af9-1f88-4bdd-9728-6c620a8adb79" message='#["Search User Request: " ++ write("inputParams" : vars.searchUserParams,"application/json")]'/>
 		<try doc:name="Try" doc:id="01261e0b-e8e9-4c6d-80f6-342c9bc9679e" >
 			<db:select doc:name="Select User" doc:id="49099e3d-aa04-401d-ab04-6fa531f751e1" config-ref="Customer_Database_Config">
 				<db:sql ><![CDATA[#[vars.searchUserQuery]]]></db:sql>
@@ -15,40 +15,70 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 			</db:select>
 			<error-handler ref="database-error-handler"/>
 		</try>
-		<logger level="INFO" doc:name="Log Response" doc:id="17923563-2716-4208-8d35-3cb4dffe6f6a" message="#[output application/json ---
-payload]"/>
+		<logger level="INFO" doc:name="Log Response" doc:id="17923563-2716-4208-8d35-3cb4dffe6f6a" message='#["Search User Response: " ++ write(payload, "application/json")]'/>
 	</sub-flow>
-	<sub-flow name="db-insert-user-subflow" doc:id="fe6bfc39-3e11-4a19-b2d5-6bd4439f5dca" >
-		<logger level="INFO" doc:name="Log Request" doc:id="9222fca5-f0ee-41a6-81f9-7ae3dbdcf302" />
+	<sub-flow name="db-bulkinsert-user-subflow" doc:id="fe6bfc39-3e11-4a19-b2d5-6bd4439f5dca" >
+		<logger level="INFO" doc:name="Log Request" doc:id="9222fca5-f0ee-41a6-81f9-7ae3dbdcf302" message='#["Insert User Request: " ++ write("inputParams" : vars.insertUserParams,"application/json")]'/>
 		<try doc:name="Try" doc:id="b2fa82d8-8d50-42f3-b76b-c5e8a44b0b59" >
 			<db:bulk-insert doc:name="Insert User" doc:id="fcd4b49f-f3fc-4768-b7ef-726ebea31960" config-ref="Customer_Database_Config">
 				<db:bulk-input-parameters><![CDATA[#[vars.insertUserParams]]]></db:bulk-input-parameters>
 				<db:sql><![CDATA[#[vars.insertUserQuery]]]></db:sql>
 			</db:bulk-insert>
+			<error-handler ref="database-error-handler"/>
 		</try>
-		<logger level="INFO" doc:name="Log Response" doc:id="44852dbf-97c5-426a-b045-13d49493530d" message="#[output application/json ---
-payload]"/>
+		<logger level="INFO" doc:name="Log Response" doc:id="44852dbf-97c5-426a-b045-13d49493530d" message='#["Insert User Response: " ++ write(payload, "application/json")]'/>
 	</sub-flow>
-	<sub-flow name="db-insert-account-subflow" doc:id="87ec7dd8-4058-47b6-a8a3-28fdf90e1ea6" >
-		<logger level="INFO" doc:name="Log Request" doc:id="c89f8a6f-d243-4f44-8ffb-55becbf06172" />
+	<sub-flow name="db-bulkinsert-account-subflow" doc:id="87ec7dd8-4058-47b6-a8a3-28fdf90e1ea6" >
+		<logger level="INFO" doc:name="Log Request" doc:id="c89f8a6f-d243-4f44-8ffb-55becbf06172" message='#["Insert Account Request: " ++ write("inputParams" : vars.insertAccountParams,"application/json")]'/>
 		<try doc:name="Try" doc:id="0df77c24-7cc7-4860-8758-caaa3af2e2ae" >
 			<db:bulk-insert doc:name="Insert Account" doc:id="201500a5-b171-44dd-8832-0fb9ce06d5b3" config-ref="Customer_Database_Config" >
 				<db:bulk-input-parameters ><![CDATA[#[vars.insertAccountParams]]]></db:bulk-input-parameters>
 				<db:sql ><![CDATA[#[vars.insertAccountQuery]]]></db:sql>
 			</db:bulk-insert>
+			<error-handler ref="database-error-handler"/>
 		</try>
-		<logger level="INFO" doc:name="Log Response" doc:id="2ba93277-2ab0-4c04-bd97-8a4dd40ce3c3" message="#[output application/json ---
-payload]" />
+		<logger level="INFO" doc:name="Log Response" doc:id="2ba93277-2ab0-4c04-bd97-8a4dd40ce3c3" message='#["Insert User Response: " ++ write(payload,"application/json")]' />
 	</sub-flow>
-	<sub-flow name="db-insert-userdetail-subflow" doc:id="8cb89dda-d042-4cd1-bccf-dc45efb8ea10">
-		<logger level="INFO" doc:name="Log Request" doc:id="d031ee8a-ec7c-42d4-a06d-0262669b2800" />
+	<sub-flow name="db-bulkinsert-userdetail-subflow" doc:id="8cb89dda-d042-4cd1-bccf-dc45efb8ea10">
+		<logger level="INFO" doc:name="Log Request" doc:id="d031ee8a-ec7c-42d4-a06d-0262669b2800" message='#["Insert User Detail Request: " ++ write("inputParams" : vars.insertUserDetailParams,"application/json")]' />
 		<try doc:name="Try" doc:id="92d3937c-4c11-47f8-9162-bf1a852971ec">
 			<db:bulk-insert doc:name="Insert User Detail" doc:id="055eda76-2196-4288-b394-ec26d39e2018" config-ref="Customer_Database_Config">
 				<db:bulk-input-parameters><![CDATA[#[vars.insertUserDetailParams]]]></db:bulk-input-parameters>
 				<db:sql><![CDATA[#[vars.insertUserDetailQuery]]]></db:sql>
 			</db:bulk-insert>
+			<error-handler ref="database-error-handler" />
 		</try>
-		<logger level="INFO" doc:name="Log Response" doc:id="22121bd8-1df0-440a-a39c-1ec5edafd5a6" message="#[output application/json ---
-payload]" />
+		<logger level="INFO" doc:name="Log Response" doc:id="22121bd8-1df0-440a-a39c-1ec5edafd5a6" message='#["Insert User Response: " ++ write(payload,"application/json")]' />
+	</sub-flow>
+	<sub-flow name="db-insert-account-subflow" doc:id="854ef57e-6d7b-4863-9772-7944262b40a7" >
+		<logger level="INFO" doc:name="Log Request" doc:id="20dafa18-be99-4c70-94f6-843e37f67ea0" message='#["Insert Account Request: " ++ write("inputParams" : vars.insertAccountParams,"application/json")]' />
+		<try doc:name="Try" doc:id="48c0111d-1637-4e7c-8261-f1ddb5df889a" >
+			<db:insert doc:name="Insert Account" doc:id="ae79a4be-a80f-403c-8c3c-8e95e286144c" config-ref="Customer_Database_Config">
+				<db:sql ><![CDATA[#[vars.insertAccountQuery]]]></db:sql>
+				<db:input-parameters ><![CDATA[#[vars.insertAccountParams]]]></db:input-parameters>
+			</db:insert>
+		</try>
+		<logger level="INFO" doc:name="Log Response" doc:id="00b76874-ee8f-4343-b799-d454bab1b698" message='#["Insert User Response: " ++ write(payload,"application/json")]' />
+	</sub-flow>
+	<sub-flow name="db-insert-userdetail-subflow" doc:id="61f16e40-e9e4-4ca8-b73b-d55eee44e2a4" >
+		<logger level="INFO" doc:name="Log Request" doc:id="4b6ba37f-4e0b-455b-988a-297ed2606cc3" message='#["Insert User Detail Request: " ++ write("inputParams" : vars.insertUserDetailParams,"application/json")]' />
+		<try doc:name="Try" doc:id="a2ad740b-c4fc-4954-9734-85eb58cc07f8" >
+			<db:insert doc:name="Insert User Detail" doc:id="f3f1a5b9-ccef-48c9-9b85-11639ab6f05a" config-ref="Customer_Database_Config">
+				<db:sql ><![CDATA[#[vars.insertUserDetailQuery]]]></db:sql>
+				<db:input-parameters ><![CDATA[#[vars.insertUserDetailParams]]]></db:input-parameters>
+			</db:insert>
+		</try>
+		<logger level="INFO" doc:name="Log Response" doc:id="dd633a4c-ec1c-4b8c-be8e-19f249f4964c" message='#["Insert User Response: " ++ write(payload,"application/json")]' />
+	</sub-flow>
+	<sub-flow name="db-insert-user-subflow" doc:id="6ddc6b74-b1e4-4eef-8ebe-dabca36a62f7" >
+		<logger level="INFO" doc:name="Log Request" doc:id="509b785b-493b-44c1-9b35-fb6263ef0eb9" message='#["Insert User Request: " ++ write("inputParams" : vars.insertUserParams,"application/json")]' />
+		<try doc:name="Try" doc:id="1f2438e1-7ca7-4f83-9d56-58f4dbe895ed">
+			<db:insert doc:name="Insert User" doc:id="dd1d5e1d-7c43-449d-905a-854c826fa00b" config-ref="Customer_Database_Config" autoGenerateKeys="true">
+				<db:sql ><![CDATA[#[vars.insertUserQuery]]]></db:sql>
+				<db:parameter-types />
+				<db:input-parameters ><![CDATA[#[vars.insertUserParams]]]></db:input-parameters>
+			</db:insert>
+		</try>
+		<logger level="INFO" doc:name="Log Response" doc:id="9e94a2ca-ac5c-417e-8a0f-e8e89708980c" message='#["Insert User Response: " ++ write(payload, "application/json")]' />
 	</sub-flow>
 </mule>

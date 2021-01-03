@@ -5,10 +5,8 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
 	<flow name="get-user-flow" doc:id="4afea1a3-f28e-4670-bef5-ea6296dcf648" >
-		<logger level="INFO" doc:name="Get User Start" doc:id="4b3b6224-8b7a-41a0-8d39-d28c426cc747" message="#[{
-	&quot;x-code&quot;: attributes.headers.'x-code'
-}]"/>
-		<ee:transform doc:name="Init Vars" doc:id="e11f50f6-c71c-4fde-8655-2d2328d8d585" >
+		<logger level="INFO" doc:name="Get User Start Log" doc:id="4b3b6224-8b7a-41a0-8d39-d28c426cc747" message='#[vars.commonHeaders]'/>
+		<ee:transform doc:name="Init DB Vars" doc:id="e11f50f6-c71c-4fde-8655-2d2328d8d585" >
 			<ee:message >
 			</ee:message>
 			<ee:variables >
@@ -28,20 +26,18 @@ import * from dw::core::Periods
 "users": payload map(usr, indx) -> {
 	"username": usr.username,
 	"fullname": usr.fullname,
- 	"birthday": usr.birthday as String {format: "dd-MM-yyyy"} default null,
- 	"age": between(now() as Date {format : "dd-MM-yyyy"} ,  usr.birthday as Date {format : "dd-MM-yyyy"}).years,
- 	"gender": if(lower(usr.gender default '' )== 'm') "male" else "female",
- 	"dateRegistered":usr.created_datetime as String {format: "dd-MM-yyyy"} default null
+ 	"birthday": usr.birthday as String {format: "yyyy-MM-dd"} default null,
+ 	"age": between(now() as Date {format: "yyyy-MM-dd"} ,  usr.birthday as Date {format: "yyyy-MM-dd"}).years,
+ 	"gender": if(lower(usr.gender default '' )== lower(p("secure::database.params.userdetail.gender.m"))) p("secure::database.params.userdetail.gender.male") else p("secure::database.params.userdetail.gender.female"),
+ 	"dateRegistered":usr.date_registered as String {format: "dd-MM-yyyy"} default null
 }]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
-		<logger level="INFO" doc:name="Get User End" doc:id="05de8198-b34a-4bbc-9b81-d0f0b2383e5a" />
+		<logger level="INFO" doc:name="Get User End Log" doc:id="05de8198-b34a-4bbc-9b81-d0f0b2383e5a" message='#["Get User End: " ++ write(payload,"application/json")]'/>
 	<error-handler ref="main-error-handler"/>
 	</flow>
 	<flow name="get-user-byusername-flow" doc:id="521222fd-e097-4f53-a4d7-042aa125093b">
-		<logger level="INFO" doc:name="Get User by Username Start" doc:id="84263b97-b855-4cdb-8e41-f071ebe2db2c" message="#[{
-	&quot;x-code&quot;: attributes.headers.'x-code'
-}]" />
+		<logger level="INFO" doc:name="Get User by Username Start Log" doc:id="84263b97-b855-4cdb-8e41-f071ebe2db2c" message="#[vars.commonHeaders]" />
 		<ee:transform doc:name="Init Vars" doc:id="971285bf-7685-4070-9f80-d5c3bfa9f0ae">
 			<ee:message>
 			</ee:message>
@@ -75,14 +71,14 @@ import * from dw::core::Periods
  {
 	"username": payload[0].username,
 	"fullname": payload[0].fullname,
- 	"birthday": payload[0].birthday as String {format: "dd-MM-yyyy"} default null,
- 	"age": between(now() as Date {format : "dd-MM-yyyy"} ,  payload[0].birthday as Date {format : "dd-MM-yyyy"} default null).years default null,
- 	"gender": if(lower(payload[0].gender default '' )== 'm') "male" else "female",
- 	"dateRegistered":payload[0].created_datetime as String {format: "dd-MM-yyyy"} default null
+ 	"birthday": payload[0].birthday as String {format: "yyyy-MM-dd"} default null,
+ 	"age": between(now() as Date {format : "yyyy-MM-dd"} ,  payload[0].birthday as Date {format : "yyyy-MM-dd"} default null).years default null,
+ 	"gender": if(lower(payload[0].gender default '' )== lower(p("secure::database.params.userdetail.gender.m"))) p("secure::database.params.userdetail.gender.male") else p("secure::database.params.userdetail.gender.female"),
+ 	"dateRegistered":payload[0].date_registered as String {format: "yyyy-MM-dd"} default null
 }]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
-		<logger level="INFO" doc:name="Get User by Username End" doc:id="251110cd-9de6-4021-99f8-9fab6fec0de1" />
+		<logger level="INFO" doc:name="Get User by Username End Log" doc:id="251110cd-9de6-4021-99f8-9fab6fec0de1" message='#["Get User by Username End: " ++ write(payload,"application/json")]'/>
 		<error-handler ref="main-error-handler"/>
 	</flow>
 </mule>

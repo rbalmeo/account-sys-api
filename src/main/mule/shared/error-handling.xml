@@ -122,7 +122,8 @@ output application/java
 			<flow-ref doc:name="Invoke Error Handling Response" doc:id="866c6125-dd0d-4e65-9ffc-5688026ff7cb" name="error-handling-response-subflow" />
             
 </on-error-propagate>
-        </error-handler>
+        
+</error-handler>
 	<error-handler name="main-error-handler" doc:id="1ee693b0-e5c4-4547-9f6c-48edaf223ba3" >
 		<on-error-continue enableNotifications="true" logException="true" doc:name="On Database Transaction Failed Continue" doc:id="41f9f134-a66a-4f47-b0d9-7c368c2f633b" type="CUST:DATABASE_TXN_ERROR" >
 			<ee:transform doc:name="Init Error Vars" doc:id="444d3abf-675d-4934-9400-d3eab9b8a128" xsi:schemaLocation="
@@ -134,31 +135,33 @@ output application/java
 ---
 {
 	category: p('mule.error.category.technical'),
-	message: error.description default p('mule.error.type.124.description'),
-	code: p('mule.error.type.124.code'),
+	message: error.description default p('mule.error.type.100.description'),
+	code: p('mule.error.type.100.code'),
 	severity: p('mule.error.severity.critical'),
 }]]></ee:set-variable>
+					<ee:set-variable variableName="httpStatus" ><![CDATA[500]]></ee:set-variable>
 				</ee:variables>
 			</ee:transform>
 			<flow-ref doc:name="Invoke Error Handling Response" doc:id="2ba75c52-fdd5-4904-98f0-bca9b27fdf8e" name="error-handling-response-subflow" />
 		</on-error-continue>
-		<on-error-continue enableNotifications="true" logException="true" doc:name="On Database Transaction Failed Continue" doc:id="e1af11b5-3622-49e1-81aa-7e0b6174bf1a" type="CUST:DATABASE_RECORD_NOT_FOUND" >
-			<ee:transform doc:name="Init Error Vars" doc:id="e6d9a82f-e8c6-46b5-9e94-a9a4261fe0a2" xsi:schemaLocation="
+		<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="b4695e44-dcc2-4605-8877-b0f4459ec99f" type="CUST:DATABASE_RECORD_NOT_FOUND">
+			<ee:transform doc:name="Init Error Vars" doc:id="da544ae6-7e71-41ac-b651-437c8cbbfe5f" xsi:schemaLocation="
 http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" >
 				<ee:message />
 				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[404]]></ee:set-variable>
 					<ee:set-variable variableName="errorObject" ><![CDATA[%dw 2.0
 output application/java
 ---
 {
 	category: p('mule.error.category.technical'),
-	message: error.description default p('mule.error.type.125.description'),
-	code: p('mule.error.type.125.code'),
+	message:  p('mule.error.type.101.description'),
+	code: p('mule.error.type.101.code'),
 	severity: p('mule.error.severity.critical'),
 }]]></ee:set-variable>
 				</ee:variables>
 			</ee:transform>
-			<flow-ref doc:name="Copy_of_Invoke Error Handling Response" doc:id="3b86628d-3211-417a-8e95-c3fe58f357d4" name="error-handling-response-subflow" />
+			<flow-ref doc:name="Invoke Error Handling Response" doc:id="383c86f7-aba4-4703-b651-281586d32660" name="error-handling-response-subflow" />
 		</on-error-continue>
 	</error-handler>
 	<error-handler name="database-error-handler" doc:id="c6dca785-7b61-46f5-aafb-b8478f0229ac" >
@@ -185,7 +188,7 @@ output application/json
 		</ee:transform>
 	</sub-flow>
 	<sub-flow name="error-handling-log-subflow" doc:id="1f8d29bf-51c2-42fd-9d3e-e0d0847e3bd3" >
-		<logger level="INFO" doc:name="Log Exception" doc:id="4edbbd1b-17d0-486e-aada-0046e55426d3" />
+		<logger level="ERROR" doc:name="Log Exception" doc:id="4edbbd1b-17d0-486e-aada-0046e55426d3" message="#[if (isEmpty(error.description)) vars.errorObject.message else error.description]"/>
 
 	</sub-flow>
 	

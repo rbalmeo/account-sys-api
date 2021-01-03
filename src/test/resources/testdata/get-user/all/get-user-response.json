@@ -1,0 +1,20 @@
+{
+  "users":[
+    {
+      "username":"john123",
+      "fullname":"John White Smith",
+      "birthday":"1990-05-02",
+      "age":30,
+      "gender":"Male",
+      "dateRegistered":"2012-08-20"
+    },
+    {
+      "username":"jackpeters",
+      "fullname":"Jack Peters",
+      "birthday":"1985-11-06",
+      "age":35,
+      "gender":"Male",
+      "dateRegistered":"2014-09-25"
+    }
+  ]
+}

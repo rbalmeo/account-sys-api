@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+	xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<munit:config name="post-user-test-suite.xml" />
+	<import doc:name="Import" doc:id="c497b904-eecd-4258-bd10-3f6dd85e8540" file="test-global-config.xml"/>
+	<munit:test name="post-user-success-test" doc:id="c7506417-0e21-4f98-9d94-247f84b2c44d" description="Test">
+		<munit:enable-flow-sources >
+			<munit:enable-flow-source value="account-sys-api-main" />
+			<munit:enable-flow-source value="post:\users:application\json:account-sys-api-config" />
+			<munit:enable-flow-source value="post-multiple-users-flow" />
+		</munit:enable-flow-sources>
+		<munit:behavior>
+			<munit-tools:mock-when doc:name="Mock when Insert User" doc:id="ce9df25b-0944-4b76-903b-b2caae48c2aa" processor="db:bulk-insert" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Insert User" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="ANY" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock when Insert Account" doc:id="2ca0b4a1-47ce-40af-9364-9b08b0fc509a" processor="db:bulk-insert" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Insert Account" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="Insert Account" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[MunitTools::getResourceAsString('testdata/get-user/all/db-select-user-response.json')]" mediaType="application/json" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock when Insert User Detail" doc:id="8a3c0199-5e58-4c54-8db4-a6da361cfa5b" processor="db:bulk-insert" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Insert User Detail" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="Insert User Detail" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[MunitTools::getResourceAsString('testdata/get-user/all/db-select-user-response.json')]" mediaType="application/json" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution>
+			<set-payload value="#[MunitTools::getResourceAsString('testdata/post-user/post-user-request.json')]" doc:name="Set Request Payload" doc:id="16ee987f-c4c4-4d40-9e90-0d20bf14922b" mimeType="application/json"/>
+			<http:request method="POST" doc:name="HTTP POST User" doc:id="277257bd-464a-430e-89db-9c534929f7db" config-ref="HTTPS_Test_Request_configuration" path="/users">
+				<http:headers ><![CDATA[#[output application/java
+---
+{
+	"x-code" : "1234567890abcdef",
+	"x-correlationid" : "test"
+}]]]></http:headers>
+			</http:request>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:verify-call doc:name="Verify call DB Insert User" doc:id="5f933bc0-214f-4244-b6e5-be3ad60c8251" processor="mule:flow-ref">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="DB Insert User" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify call DB Insert Account" doc:id="18e1fa2c-37e2-4638-a87d-924da86ff3df" processor="mule:flow-ref">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="DB Insert Account" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify call DB Insert User Detail" doc:id="3277ff7c-de90-4ef5-b50c-df9c6821a076" processor="mule:flow-ref">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="DB Insert User Detail" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:assert-that doc:name="Assert Response Payload" doc:id="4ad8f080-5853-4c34-b128-b309eb458d13" expression="#[output application/java --- (write(payload, 'application/json') as String) replace /(\s+)/  with '']" is="#[MunitTools::equalTo(MunitTools::getResourceAsString('testdata/post-user/success-response.json') replace /(\s+)/  with '')]"/>
+		</munit:validation>
+	</munit:test>
+
+	<munit:test name="post-user-db-error-test" doc:id="c9b2690c-4e10-46a8-a22b-af648e4eed95" description="Test" expectedErrorType="ANY">
+		<munit:enable-flow-sources >
+			<munit:enable-flow-source value="account-sys-api-main" />
+			<munit:enable-flow-source value="post:\users:application\json:account-sys-api-config" />
+		</munit:enable-flow-sources>
+		<munit:behavior>
+			<munit-tools:mock-when doc:name="Mock when Insert User" doc:id="a16e0754-3ed9-4e2d-8799-607ae545170a" processor="db:bulk-insert" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Insert User" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="ANY" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock when Insert Account" doc:id="80c0292e-134b-4ec3-bf02-6f6cb2e51c1b" processor="db:bulk-insert" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Insert Account" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="Insert Account" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[MunitTools::getResourceAsString('testdata/get-user/all/db-select-user-response.json')]" mediaType="application/json" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock when Insert User Detail" doc:id="313cc51c-e9d4-4ad6-ba6c-8c56cb304a67" processor="db:bulk-insert" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Insert User Detail" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="Insert User Detail" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[MunitTools::getResourceAsString('testdata/get-user/all/db-select-user-response.json')]" mediaType="application/json" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+
+		</munit:behavior>
+		<munit:execution>
+			<set-payload value="#[MunitTools::getResourceAsString('testdata/post-user/post-user-request.json')]" doc:name="Set Request Payload" doc:id="e6a4d513-cfd8-400e-8d19-3b7074345908" />
+			<http:request method="POST" doc:name="HTTP POST User" doc:id="9ea96193-7430-4622-b43a-ef396951ea20" config-ref="HTTPS_Test_Request_configuration" path="/users">
+				<http:headers ><![CDATA[#[output application/java
+---
+{
+	"x-code" : "1234567890abcdef",
+	"x-correlationid" : "test"
+}]]]></http:headers>
+			</http:request>
+		
+</munit:execution>
+		<munit:validation>
+			<munit-tools:verify-call doc:name="Verify call Log Exception" doc:id="06748a7d-9c09-410b-9d5b-6c584c8199af" processor="mule:logger">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Log Exception" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+
+		</munit:validation>
+	
+</munit:test>
+
+	<munit:test name="post-user-incompletefields-error-test" doc:id="28fa5c82-6aaa-4af3-a2dd-2388d4246bec" description="Test" expectedErrorType="HTTP:BAD_REQUEST">
+		<munit:enable-flow-sources >
+			<munit:enable-flow-source value="account-sys-api-main" />
+			<munit:enable-flow-source value="post:\users:application\json:account-sys-api-config" />
+		</munit:enable-flow-sources>
+		<munit:execution>
+			<set-payload value="#[MunitTools::getResourceAsString('testdata/post-user/post-user-incompletefields-request.json')]" doc:name="Set Request Payload" doc:id="a88fb2bf-133c-403c-97eb-76ec3c7be10b" mimeType="application/json"/>
+			<http:request method="POST" doc:name="HTTP POST User" doc:id="9ce0b00a-f7dc-40e2-adb8-04b73c81e0a9" config-ref="HTTPS_Test_Request_configuration" path="/users">
+				<http:headers ><![CDATA[#[output application/java
+---
+{
+	"x-code" : "1234567890abcdef",
+	"x-correlationid" : "test"
+}]]]></http:headers>
+			</http:request>
+		
+</munit:execution>
+		<munit:validation>
+			<munit-tools:verify-call doc:name="Verify call Log Exception" doc:id="e71e295a-1c5d-4cdc-8ed0-88f4afa68c41" processor="mule:logger" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Log Exception" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+
+		</munit:validation>
+	
+</munit:test>
+	
+</mule>

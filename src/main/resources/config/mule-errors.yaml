@@ -9,26 +9,26 @@ mule:
       minor: "MINOR"
     type:
       "400": 
-        code: "HTTP-MULE-400"    
-        description: "The request was invalid or cannot be otherwise served."
+        code: "400"    
+        description: "Bad Request."
       "404": 
-        code: "HTTP-MULE-404"    
+        code: "404"    
         description: "The URI requested is invalid or the resource requested does not exists."
       "405": 
-        code: "HTTP-MULE-405"    
+        code: "405"    
         description: "A request was made of a resource using a request method not supported by that resource."
       "406": 
-        code: "HTTP-MULE-406"    
+        code: "406"    
         description: "The server cannot respond with the accept-header specified in the request."
       "415": 
-        code: "HTTP-MULE-415"    
+        code: "415"    
         description: "The request entity has a media type which the server or resource does not support."
       "401": 
-        code: "HTTP-MULE-401"    
+        code: "401"    
         description: "Unauthorized."
-      "124": 
-        code: "DB-MULE-124"
+      "100": 
+        code: "DB-MULE-100"
         description: "Error in Database Transaction."
-      "125": 
-        code: "DB-MULE-125"
+      "101": 
+        code: "DB-MULE-101"
         description: "User Not Found."
